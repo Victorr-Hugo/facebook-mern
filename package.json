@@ -1,0 +1,31 @@
+{
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cloudinary": "^1.33.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "fs-extra": "^11.1.0",
+    "http-errors": "^2.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.8.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^4.5.4"
+  },
+  "name": "odin-book",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "scripts": {
+    "dev": "nodemon server --ignore client",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module"
+}
