@@ -42,12 +42,18 @@ const Header = () => {
 
   return (
     <header className='z-[100]'>
-        <div className='bg-white w-full shadow-md fixed'>
+        <div className='bg-white w-full shadow-md fixed z-[100]'>
             <div className='h-[60px] px-4 m-auto w-full items-center box-border text-white flex-row flex relative'>
-              <button onClick={() => navigate('/')} className='cursor-pointer w-10 h-10 items-center flex p-0 m-0'>
-                <img alt='' src={icon} className='w-full h-full min-w-[40px] min-h-[40px]'/>
-              </button>
-              <button onClick={() => setSearchNavIsShown(true)} className='ml-2 flex-row flex w-[312px] bg-[#f0f2f5] rounded-[50px] py-1 px-2 cursor-pointer hover:bg-[#e6e8eb]'>
+              { window.location.pathname != '/messenger' ? (
+                <button onClick={() => navigate('/')} className='cursor-pointer w-10 h-10 items-center flex p-0 m-0'>
+                  <img alt='' src={icon} className='w-full h-full min-w-[40px] min-h-[40px]'/>
+                </button>
+              ):(
+                <div onClick={() => navigate('/')} className='h-8 w-8 cursor-pointer'>
+                  <img alt='' src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Facebook_Messenger_logo_2018.svg/512px-Facebook_Messenger_logo_2018.svg.png' className='w-full h-full min-w-[40px] min-h-[40px]'/>
+                </div>
+              ) }
+              <button onClick={() => setSearchNavIsShown(true)} className='ml-3 flex-row flex w-[312px] bg-[#f0f2f5] rounded-[50px] py-1 px-2 cursor-pointer hover:bg-[#e6e8eb]'>
                 <svg className='block m-auto' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='24' height='24' fill='#666'>
                   <path d='m20.8333 19-3.6666-3.6667c.9167-1.3333 1.4999-2.9166 1.4999-4.6666 0-4.33334-3.5833-7.9167-7.9167-7.9167-4.33331 0-7.91665 3.58336-7.91665 7.9167 0 4.3333 3.58334 7.9167 7.91665 7.9167 1.75 0 3.3334-.5834 4.6668-1.5001l3.6666 3.6667zm-15.50005-8.25c0-2.99999 2.41667-5.41666 5.41665-5.41666 3 0 5.4167 2.41667 5.4167 5.41666 0 3-2.4167 5.4167-5.4167 5.4167-2.99998 0-5.41665-2.4167-5.41665-5.4167z'></path>
                 </svg>
@@ -56,7 +62,7 @@ const Header = () => {
               </button>
               <div>
                 {searchNavIsShown && (
-                  <div onMouseOver={() => setSearchNavIsShown(true)}  onMouseOut={() => setSearchNavIsShown(false)} role='search' aria-label='Search on Odinbook' className='grow ml-2 w-fit absolute z-[1000] left-3 bg-white rounded-[19px] shadow-md px-3 h-[432px]'>
+                  <div onMouseOver={() => setSearchNavIsShown(true)}  onMouseOut={() => setSearchNavIsShown(false)} role='search' aria-label='Search on Odinbook' className='grow ml-2 w-fit absolute z-[1000] left-1 bg-white top-1 rounded-[19px] shadow-md px-3 h-[432px]'>
                     <div className='relative min-w-full w-full'>
                       <Formik
                         initialValues={search}

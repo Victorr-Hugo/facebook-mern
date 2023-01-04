@@ -8,7 +8,7 @@ import {
 }from '../controllers/chat.controllers.js'
 const router = Router()
 
-router.post('/chat', createChat)
+router.post('/chat/create/:senderId/:receiverId', createChat)
 router.get('/chat/:id', getUserChat)
 router.get('/chat/:firstUser/:secondUser/', searchChat)
 

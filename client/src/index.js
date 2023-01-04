@@ -6,6 +6,7 @@ import { PostProvider } from './context/postContext';
 import { UserProvider } from './context/userContext';
 import { MarketProvider } from './context/marketContext'
 import { GroupProvider } from './context/groupContext';
+import { ChatProvider } from './context/chatContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -14,7 +15,9 @@ root.render(
       <PostProvider>
         <MarketProvider>
           <GroupProvider>
+            <ChatProvider>
               <App/>
+            </ChatProvider>
           </GroupProvider>
         </MarketProvider>
       </PostProvider>

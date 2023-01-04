@@ -206,3 +206,23 @@ export const searchUser = async(req, res) => {
         return res.status(500).json({ message: error.message })
     }
 }
+
+export const getFriends = async(req, res) => {
+    try {
+        const { id } = req.params
+        const user = await User.findById(id)
+        const friends = await Promise.all(
+            user.friends.map((friendId) => {
+                return User.findById(friendId)
+            })
+        )
+        let friendList = []
+        friends.map((friend) => {
+            const { _id, username, image, firstname, lastname } = friend
+            friendList.push({ _id, username, image, firstname, lastname })
+        })
+        return res.status(200).json(friendList)
+    } catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+}

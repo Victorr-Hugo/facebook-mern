@@ -34,6 +34,7 @@ app.use('/api', commentRouter)
 app.use('/api', chatRouter)
 app.use('/api', marketPlaceRouter)
 app.use('/api', groupRouter)
+app.use('/api', chatRouter)
 
 const io = new Server(httpServer, {
     cors: {

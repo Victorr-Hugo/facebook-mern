@@ -8,6 +8,7 @@ import {
     updateUser,
     getCurrentUser,
     searchUser,
+    getFriends
 } from '../controllers/user.controllers.js'
 
 const router = Router()
@@ -20,5 +21,6 @@ router.delete('/users/:id', deleteUser)
 router.put('/users/:id', updateUser)
 router.get('/users/current/:id', getCurrentUser)
 router.post('/users/search', searchUser)
+router.get('/user/friends/:id', getFriends)
 
 export default router

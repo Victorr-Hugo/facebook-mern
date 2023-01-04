@@ -20,20 +20,18 @@ const uploadImage = async (filePath) => {
   });
 };
 
-export const createChat = async (req, res) => {
+export const createChat = async (firstUser, secondUser, res) => {
     try {
-        const { senderId, receiverId } = req.body
         const newChat = new Chat({
             users:[
-                senderId,
-                receiverId,
+                firstUser,
+                secondUser,
             ]
         })
-
         await newChat.save()
-        return res.status(200).json(newChat)
+        return res.json(newChat)
     } catch (error) {
-        return res.status(500).json({ message: error.message })            
+        return res.json({ message: error.message })            
     }
 }
  
@@ -44,7 +42,7 @@ export const getUserChat = async(req, res) => {
             users:{
                 $in: [id]
             }
-        })
+        }).populate('users')
         if(!chat) return res.status(400).message('Chat not found')
         res.status(200).json(chat)
     } catch (error) {
@@ -59,9 +57,13 @@ export const searchChat = async(req, res) =>{
             users:{
                 $all:[firstUser, secondUser]
             }
-        })
-        if(!chat) return res.status(400).message('Chat not found')
-        return res.status(200).json(chat)
+        }).populate('users')
+        if(!chat) {
+            createChat(firstUser, secondUser)
+        }else{
+            return res.status(200).json(chat)
+
+        }
     } catch (error) {
         return res.status(500).json({ message: error.message })            
     }
