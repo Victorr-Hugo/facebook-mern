@@ -12,7 +12,68 @@ import { useChats } from '../context/chatContext'
 export const Messenger = () => {
     const navigate = useNavigate()
     const { user } = useUsers()
-    const { chat } = useChats()
+    const { chat, sendMessage } = useChats()
+    const [ messages, setMessages ] = useState([])
+    const [message, setMessage] = useState('')
+    const [ arrivalMessage, setArrivalMessage ] = useState(null)
+    const [ onlineUsers, setOnlineUsers ] = useState([])
+    const socket = useRef()
+    const scrollRef = useRef()
+
+    useEffect(() => {
+        socket.current = io('ws://localhost:4000')
+        socket.current.on('getMessage', (data) => {
+            setArrivalMessage({
+                from: data.from,
+                body: data.body,
+                cratedAt: Date.now()
+            })
+        })
+    }, [])
+
+    useEffect(() => {
+        arrivalMessage &&
+        chat?.users.includes(arrivalMessage.sender) &&
+        setMessages((prev) => [...prev, arrivalMessage])
+    }, [arrivalMessage, chat])
+
+    useEffect(() => {
+        socket.current.emit('addUser', user._id)
+        socket.current.on('getUsers', (users) => {
+            setOnlineUsers(
+                user.friends?.filter((f) => users.some((u) => u.userId === f))
+            )
+        })
+    }, [user])
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+        if(event.key === 'Enter'){
+            const newMessage = {
+                from: user._id,
+                body: message,
+                chatId: chat._id
+            }
+            const receiverId = chat.users?.find(
+                (user) => user !== user._id
+            )
+
+            socket.current.emit('sendMessage', {
+                from: user._id,
+                receiverId,
+                body: message,
+            })   
+
+            try {
+                const res = await sendMessage(newMessage)
+                setMessages([...message, res.data])
+                setMessage('')
+            } catch (error) {
+                console.error(error)
+            }
+        }
+    }
 
     return (
     <div className=''>
@@ -44,7 +105,7 @@ export const Messenger = () => {
                     <div className='w-full box-border h-full flex-col flex pt-14 pl-[320px] border-x'>
                         <div className='bg-white p-2 shadow flex-row flex'>
                             {chat?.users.map((userchat) => {
-                                if(userchat._id != user._id){
+                                if(userchat._id !== user._id){
                                     return(
                                         <div key={userchat._id} className='p-3 flex-row flex hover:bg-[#F0F2F5] w-fit rounded-[9px] cursor-pointer'>
                                             <img alt='' src={userchat.image?.url} className='w-10 h-10 rounded-full object-cover'/>
@@ -59,7 +120,7 @@ export const Messenger = () => {
 
                         <div className='bg-white z-20 p-4 fixed bottom-0 left-[314px] right-0 '>
                             <div className='w-full flex-row flex px-10'>
-                                <input placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-1 px-5 text-[#050505] w-full'/>
+                                <input placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-2 px-5 text-[#050505] w-full' onChange={(e) => setMessage(e.target.value)} value={message} onKeyUp={handleSubmit}/>
                             </div>      
                         </div>
                     </div>

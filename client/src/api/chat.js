@@ -6,10 +6,10 @@ export const createChatRequest = async(senderId , receiverId) => {
     return await axios.post(`/api/chat/create/${senderId}/${receiverId}`)
 }
 
-export const createMessageRequest = async(message) => {
+export const createMessageRequest = async(newMessage) => {
     const form = new FormData()
-    for(let key in message){
-        form.append(key, message[key])
+    for(let key in newMessage){
+        form.append(key, newMessage[key])
     }
     return await axios.post('/api/chat/message', form , {
         headers:{

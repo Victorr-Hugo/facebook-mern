@@ -22,9 +22,9 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    const sendMessage = async(message) => {
+    const sendMessage = async(newMessage) => {
         try {
-            const res = await createMessageRequest(message)
+            const res = await createMessageRequest(newMessage)
             return res.data        
         } catch (error) {
             console.error(error)
