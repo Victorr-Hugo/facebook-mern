@@ -57,7 +57,7 @@ export const searchChat = async(req, res) =>{
             users:{
                 $all:[firstUser, secondUser]
             }
-        }).populate('users')
+        }).populate('users').populate('messages')
         if(!chat) {
             createChat(firstUser, secondUser)
         }else{
@@ -103,11 +103,9 @@ export const createMessage = async(req, res) => {
 export const getMessages = async(req, res) => {
     try {
         const { id } = req.params
-        const messages = await Message.find({
-            chatId: id
-        })
-        if (!messages) return res.status(404).json({ message: 'Messages Not Found' })
-        return res.status(200).json(messages)
+        const chat = await Chat.findById(id)
+        if (!chat) return res.status(404).json({ message: 'Messages Not Found' })
+        return res.status(200).json(chat)
     } catch (error) {
         return res.status(500).json({ message: error.message })            
     }

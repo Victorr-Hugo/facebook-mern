@@ -45,7 +45,7 @@ const io = new Server(httpServer, {
 let users = []
 
 const addUser = (userId, socketId) => {
-    !users.some((user) => user.userId === userId && users.push({ userId, socketId }))
+    !users.some((user) => user.userId === userId) && users.push({ userId, socketId })
 }
 
 const removeUser = (socketId) => {
@@ -53,6 +53,7 @@ const removeUser = (socketId) => {
 }
 
 const getUser = (userId) => {
+    console.log(users)
     return users.find((user) => user.userId === userId)
 }
 
@@ -63,8 +64,8 @@ io.on('connection',(socket) => {
         io.emit('getUsers', users)
     })
 
-    socket.on('sendMessage', ({ from, receiverId, body }) => {
-        const user = getUser(receiverId)
+    socket.on('sendMessage', ({ from, to, body }) => {
+        const user = getUser(from)
         io.to(user.socketId).emit('getMessage', {
             from,
             body,

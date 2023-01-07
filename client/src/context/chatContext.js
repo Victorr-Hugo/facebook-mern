@@ -11,11 +11,14 @@ export const useChats = () => {
 
 export const ChatProvider = ({ children }) => {
     const [chat, setChat] = useState(null)
+    const [ previousMessages, setPreviousMessages ] = useState([])
 
     const searchChat = async(firstUser, secondUser) => {
         try {
             const res = await searchChatRequest(firstUser, secondUser)
             setChat(res.data)
+            setPreviousMessages(res.data.messages)
+            console.log(previousMessages)
             return res.data
         } catch (error) {
             console.error(error)
@@ -25,7 +28,7 @@ export const ChatProvider = ({ children }) => {
     const sendMessage = async(newMessage) => {
         try {
             const res = await createMessageRequest(newMessage)
-            return res.data        
+            return res        
         } catch (error) {
             console.error(error)
         }
@@ -41,7 +44,7 @@ export const ChatProvider = ({ children }) => {
     }
 
     return(
-        <chatContext.Provider value={{ chat, searchChat, getMessages, sendMessage  }}>
+        <chatContext.Provider value={{ chat, searchChat, getMessages, sendMessage, previousMessages  }}>
             { children }
         </chatContext.Provider>
     )

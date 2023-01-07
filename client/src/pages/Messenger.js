@@ -3,16 +3,18 @@ import { io } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
 import { useUsers } from '../context/userContext'
 
+import axios from 'axios'
 import ChatOnline from '../components/ChatOnline'
 import Conversation from '../components/Conversation'
 import Header from '../components/Header'
 import MessageForm from '../components/MessageForm'
+import MessageCard from '../components/MessageCard'
 import { useChats } from '../context/chatContext'
 
 export const Messenger = () => {
     const navigate = useNavigate()
     const { user } = useUsers()
-    const { chat, sendMessage } = useChats()
+    const { chat, sendMessage, previousMessages } = useChats()
     const [ messages, setMessages ] = useState([])
     const [message, setMessage] = useState('')
     const [ arrivalMessage, setArrivalMessage ] = useState(null)
@@ -33,7 +35,7 @@ export const Messenger = () => {
 
     useEffect(() => {
         arrivalMessage &&
-        chat?.users.includes(arrivalMessage.sender) &&
+        chat?.users.includes(arrivalMessage.from) &&
         setMessages((prev) => [...prev, arrivalMessage])
     }, [arrivalMessage, chat])
 
@@ -53,12 +55,13 @@ export const Messenger = () => {
             const newMessage = {
                 from: user._id,
                 body: message,
-                chatId: chat._id
+                chatId: chat?._id
             }
-            const receiverId = chat.users?.find(
+            console.log(newMessage)
+            const receiverId = chat?.users?.find(
                 (user) => user !== user._id
             )
-
+                
             socket.current.emit('sendMessage', {
                 from: user._id,
                 receiverId,
@@ -67,7 +70,7 @@ export const Messenger = () => {
 
             try {
                 const res = await sendMessage(newMessage)
-                setMessages([...message, res.data])
+                setMessages([...messages, res.data])
                 setMessage('')
             } catch (error) {
                 console.error(error)
@@ -116,11 +119,31 @@ export const Messenger = () => {
                                 }
                             })}
                         </div>
-                        <div></div>
+                        <div className='w-fit h-fit'>
+                            { chat? (
+                            <div className='w-fit h-fit'>
+                                <div>
+                                    {previousMessages.map((previous) => (
+                                       <div ref={scrollRef} key={previous?._id}> 
+                                            <MessageCard  message={previous} />
+                                        </div>
+                                    ))}
+                                </div>
+                                {messages.map((message) => (
+                                    <div ref={scrollRef} key={message?._id}> 
+                                        <MessageCard  message={message} />
+                                    </div>
+                                ))}
+                            </div>
+                            ):(
+                            <div></div>
+                            ) }
+
+                        </div>
 
                         <div className='bg-white z-20 p-4 fixed bottom-0 left-[314px] right-0 '>
                             <div className='w-full flex-row flex px-10'>
-                                <input placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-2 px-5 text-[#050505] w-full' onChange={(e) => setMessage(e.target.value)} value={message} onKeyUp={handleSubmit}/>
+                                <input placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-2 px-5 text-[#050505] w-full' onChange={(e) => setMessage(e.target.value)} onKeyUp={handleSubmit}  value={message} />
                             </div>      
                         </div>
                     </div>
