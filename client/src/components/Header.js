@@ -10,6 +10,7 @@ const Header = () => {
   const [data, setData] = useState([])
   const navigate = useNavigate()
   const [ settingsModal, setSettingsModal ] = useState(false)
+  const [ showMessenger, setShowMessenger ] = useState(false)
   const [ searchNavIsShown, setSearchNavIsShown ] = useState(false)
   const [search, setSearch] = useState({
     description: '',
@@ -38,6 +39,19 @@ const Header = () => {
         </ul>
       )
     }
+  }
+
+  const renderFriends = () => {
+    return(
+      <ul className='w-full px-2 py-2'>
+        {user.friends.map((friend) => (
+          <li onClick={() => navigate('/messenger')} className='flex-row flex w-full my-2 cursor-pointer'>
+            <img alt='' src={friend.image?.url} className='w-10 h-10 object-cover rounded-full'/>
+            <div className='ml-2 my-auto text-[18px]'>{friend.firstname} {friend.lastname}</div>
+          </li>
+        ))}
+      </ul>
+    )
   }
 
   return (
@@ -171,7 +185,7 @@ const Header = () => {
               <div className='spacer w-4 h-px'></div>
 
               <div className='spacer w-2 h-px'></div>
-              <div className='p-[10px] rounded-full hover:bg-[#c6c8ce] bg-[#e5e9f0] flex-row flex cursor-pointer'>
+              <div onClick={() => setShowMessenger(true)} className='p-[10px] rounded-full hover:bg-[#c6c8ce] bg-[#e5e9f0] flex-row flex cursor-pointer'>
                 <svg className='block m-auto' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='18' height='18'  fill='#1b1b1b'>
                   <path d='M20,0H4A4,4,0,0,0,0,4V16a4,4,0,0,0,4,4H6.9l4.451,3.763a1,1,0,0,0,1.292,0L17.1,20H20a4,4,0,0,0,4-4V4A4,4,0,0,0,20,0ZM7,5h5a1,1,0,0,1,0,2H7A1,1,0,0,1,7,5ZM17,15H7a1,1,0,0,1,0-2H17a1,1,0,0,1,0,2Zm0-4H7A1,1,0,0,1,7,9H17a1,1,0,0,1,0,2Z'></path>
                 </svg>
@@ -188,7 +202,20 @@ const Header = () => {
               </div>
             </div>
         </div>
-        {settingsModal && <div onMouseOver={() => setSettingsModal(true)}  onMouseOut={() => setSettingsModal(false)} className='px-4 absolute right-6 rounded-[9px] top-10 py-4 bg-white'>
+        {showMessenger && (
+          <div onMouseOut={() => setShowMessenger(false)} className='bg-white p-4 right-10 z-[500] w-[321px] shadow-lg fixed rounded-[9px] top-10 flex-col flex' onMouseOver={() => setShowMessenger(true)} >
+            <div className='text-[24px] font-semibold'>Chats</div>
+            <div className='w-full mt-3'>
+              <div className='bg-[#f0f2f5] w-full px-2 py-1 rounded-[50px]'>
+                <input placeholder='Search on Messenger' className='bg-transparent'/>
+              </div>
+              <div className='w-full h-fit'>
+                  {renderFriends()}
+                </div>
+            </div>                        
+          </div>
+        )}
+        {settingsModal && <div onMouseOver={() => setSettingsModal(true)}  onMouseOut={() => setSettingsModal(false)} className='px-4 fixed z-[500] right-6 rounded-[9px] top-10 py-4 bg-white'>
           <div className='flex-row border-b pb-4 flex w-full'>
             <div className='w-10 h-10'>
               <img alt='' src={user.image?.url} className='w-[full] h-full min-w-full min-h-full rounded-full object-cover'/>
@@ -202,7 +229,7 @@ const Header = () => {
           <div>DarkMode</div>
           <div>Logout</div>
         </div>
- }
+      }
     </header>
   )
 }

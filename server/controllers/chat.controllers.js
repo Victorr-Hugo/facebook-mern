@@ -20,21 +20,6 @@ const uploadImage = async (filePath) => {
   });
 };
 
-export const createChat = async (firstUser, secondUser, res) => {
-    try {
-        const newChat = new Chat({
-            users:[
-                firstUser,
-                secondUser,
-            ]
-        })
-        await newChat.save()
-        return res.json(newChat)
-    } catch (error) {
-        return res.json({ message: error.message })            
-    }
-}
- 
 export const getUserChat = async(req, res) => {
     try {
         const { id } = req.params
@@ -59,7 +44,14 @@ export const searchChat = async(req, res) =>{
             }
         }).populate('users').populate('messages')
         if(!chat) {
-            createChat(firstUser, secondUser)
+            const newChat = new Chat({
+                users:[
+                    firstUser,
+                    secondUser,
+                ]
+            })
+            await newChat.save()
+            return res.json(newChat)
         }else{
             return res.status(200).json(chat)
 

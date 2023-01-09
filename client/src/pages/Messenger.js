@@ -1,23 +1,25 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Formik, Form, Field } from 'formik'
+import axios from 'axios'
+
 import { io } from 'socket.io-client'
 import { useNavigate } from 'react-router-dom'
-import { useUsers } from '../context/userContext'
 
-import axios from 'axios'
-import ChatOnline from '../components/ChatOnline'
+import { useUsers } from '../context/userContext'
+import { useChats } from '../context/chatContext'
+
 import Conversation from '../components/Conversation'
 import Header from '../components/Header'
-import MessageForm from '../components/MessageForm'
 import MessageCard from '../components/MessageCard'
-import { useChats } from '../context/chatContext'
+import MessageReceivedCard from '../components/MessageReceivedCard'
+
 
 export const Messenger = () => {
     const navigate = useNavigate()
     const { user } = useUsers()
-    const { chat, sendMessage, previousMessages } = useChats()
+    const { chat, sendMessage, getMessages } = useChats()
     const [ messages, setMessages ] = useState([])
-    const [message, setMessage] = useState('')
-    const [ arrivalMessage, setArrivalMessage ] = useState(null)
+    const [ incomingMessage, setIncomingMessage ] = useState(null)
     const [ onlineUsers, setOnlineUsers ] = useState([])
     const socket = useRef()
     const scrollRef = useRef()
@@ -25,19 +27,23 @@ export const Messenger = () => {
     useEffect(() => {
         socket.current = io('ws://localhost:4000')
         socket.current.on('getMessage', (data) => {
-            setArrivalMessage({
+            setIncomingMessage({
+                _id: data._id,
                 from: data.from,
                 body: data.body,
-                cratedAt: Date.now()
+                createdAt: Date.now()
             })
         })
-    }, [])
+    },[])
+
 
     useEffect(() => {
-        arrivalMessage &&
-        chat?.users.includes(arrivalMessage.from) &&
-        setMessages((prev) => [...prev, arrivalMessage])
-    }, [arrivalMessage, chat])
+        if(incomingMessage){
+            chat?.users.includes(incomingMessage.from)
+            setMessages([...messages, incomingMessage])
+            console.log(messages)
+        }
+    }, [incomingMessage, chat])
 
     useEffect(() => {
         socket.current.emit('addUser', user._id)
@@ -48,35 +54,22 @@ export const Messenger = () => {
         })
     }, [user])
 
-
-    const handleSubmit = async (event) => {
-        event.preventDefault()
-        if(event.key === 'Enter'){
-            const newMessage = {
-                from: user._id,
-                body: message,
-                chatId: chat?._id
-            }
-            console.log(newMessage)
-            const receiverId = chat?.users?.find(
-                (user) => user !== user._id
-            )
-                
-            socket.current.emit('sendMessage', {
-                from: user._id,
-                receiverId,
-                body: message,
-            })   
-
+    useEffect(() => {
+        (async()=> {
             try {
-                const res = await sendMessage(newMessage)
-                setMessages([...messages, res.data])
-                setMessage('')
+                setMessages(chat?.messages)
+                console.log(messages)
             } catch (error) {
                 console.error(error)
             }
-        }
-    }
+        })()
+    },[chat])
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [])
+
+
 
     return (
     <div className=''>
@@ -110,7 +103,7 @@ export const Messenger = () => {
                             {chat?.users.map((userchat) => {
                                 if(userchat._id !== user._id){
                                     return(
-                                        <div key={userchat._id} className='p-3 flex-row flex hover:bg-[#F0F2F5] w-fit rounded-[9px] cursor-pointer'>
+                                        <div key={userchat?._id} className='p-3 flex-row flex hover:bg-[#F0F2F5] w-fit rounded-[9px] cursor-pointer'>
                                             <img alt='' src={userchat.image?.url} className='w-10 h-10 rounded-full object-cover'/>
                                             <div className='spacer w-4 h-px'></div>
                                             <div className='text-[22px] font-semibold'>{userchat.firstname} {userchat.lastname}</div>
@@ -119,31 +112,59 @@ export const Messenger = () => {
                                 }
                             })}
                         </div>
-                        <div className='w-fit h-fit'>
+                        <div className='w-full h-fit px-6'>
                             { chat? (
-                            <div className='w-fit h-fit'>
-                                <div>
-                                    {previousMessages.map((previous) => (
-                                       <div ref={scrollRef} key={previous?._id}> 
-                                            <MessageCard  message={previous} />
-                                        </div>
-                                    ))}
-                                </div>
-                                {messages.map((message) => (
-                                    <div ref={scrollRef} key={message?._id}> 
-                                        <MessageCard  message={message} />
-                                    </div>
-                                ))}
+                            <div className='w-full h-fit'>
+                                {messages?.map((message) => {
+                                    if(message?.from === user._id){
+                                        return(
+                                            <div ref={scrollRef} className='py-2 px-4 w-full'>
+                                                <div className='w-fit h-fit py-2 px-5 bg-[#E4E6EB] text-[#050505] text-[16px] rounded-full'>{message?.body}</div>
+                                            </div>
+                                        )
+                                    }else{
+                                        return(
+                                            <div ref={scrollRef} className='py-2 px-4 mr-0 ml-auto w-fit'>
+                                                <div className='mr-0 ml-auto'>
+                                                    <div className='w-fit h-fit py-2 px-5 bg-[#0084FF] text-white text-[16px] rounded-full'>{message?.body}</div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                })}
                             </div>
-                            ):(
-                            <div></div>
-                            ) }
+                            ):null}
 
                         </div>
 
                         <div className='bg-white z-20 p-4 fixed bottom-0 left-[314px] right-0 '>
                             <div className='w-full flex-row flex px-10'>
-                                <input placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-2 px-5 text-[#050505] w-full' onChange={(e) => setMessage(e.target.value)} onKeyUp={handleSubmit}  value={message} />
+                                <Formik
+                                initialValues={{
+                                    from: user._id,
+                                    body: '',
+                                    chatId: chat?._id
+                                }}
+                                enableReinitialize
+                                onSubmit={async(values, actions) => {
+                                    const receiverId = chat?.users?.find((reciver) => reciver._id !== user._id)._id
+                                    socket.current.emit('sendMessage', {
+                                        _id:Math.floor(Math.random() * 1000),
+                                        from: user._id,
+                                        receiverId,
+                                        body: values.body
+                                    })
+                                    const res = await sendMessage(values) 
+                                    setMessages([...messages, res])
+                                    actions.resetForm()
+                                }}>
+                                    {({handleSubmit}) => (
+                                        <Form onSubmit={handleSubmit}>
+                                            <Field name='body'  placeholder='Send Message' className='bg-[#F0F2F5] rounded-[50px] p-2 px-5 text-[#050505] w-full'/>
+                                        </Form>
+                                    )}
+
+                                </Formik>
                             </div>      
                         </div>
                     </div>

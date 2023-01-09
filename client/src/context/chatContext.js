@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { createChatRequest, createMessageRequest, getMessagesRequest, searchChatRequest } from '../api/chat'
+import { createContext, useContext, useEffect, useState, useRef } from 'react'
+import { createMessageRequest, getMessagesRequest, searchChatRequest } from '../api/chat'
 
 const chatContext = createContext()
 
@@ -11,14 +11,13 @@ export const useChats = () => {
 
 export const ChatProvider = ({ children }) => {
     const [chat, setChat] = useState(null)
-    const [ previousMessages, setPreviousMessages ] = useState([])
+
 
     const searchChat = async(firstUser, secondUser) => {
         try {
             const res = await searchChatRequest(firstUser, secondUser)
             setChat(res.data)
-            setPreviousMessages(res.data.messages)
-            console.log(previousMessages)
+            console.log(res)
             return res.data
         } catch (error) {
             console.error(error)
@@ -28,7 +27,7 @@ export const ChatProvider = ({ children }) => {
     const sendMessage = async(newMessage) => {
         try {
             const res = await createMessageRequest(newMessage)
-            return res        
+            return res.data
         } catch (error) {
             console.error(error)
         }
@@ -44,7 +43,7 @@ export const ChatProvider = ({ children }) => {
     }
 
     return(
-        <chatContext.Provider value={{ chat, searchChat, getMessages, sendMessage, previousMessages  }}>
+        <chatContext.Provider value={{ chat, searchChat, getMessages, sendMessage }}>
             { children }
         </chatContext.Provider>
     )

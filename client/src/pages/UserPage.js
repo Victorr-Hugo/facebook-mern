@@ -26,6 +26,8 @@ export const UserPage = () => {
         if(params.username){
           const finded = await getUser(params.username)
           setFinded(finded)
+          const friends = user.friends?.find(friend => friend === finded._id)
+          if(friends) setIsFriend(true)
           if(finded._id === current ) setMyPage(true)
         }
       })()
@@ -109,8 +111,9 @@ export const UserPage = () => {
           <ul>
             {finded?.friends?.map((friend) => {
               return(
-                <li key={friend._id} friend={friend}>
-                  {friend.firstname}
+                <li onClick={() => navigate('/user/' + friend.username)} key={friend._id} friend={friend} className='flex-row flex m-2 cursor-pointer'>
+                  <img alt='' src={friend.image?.url} className='w-10 h-10 rounded-full object-cover'/>                  
+                  <div className='ml-3 m-auto text-[14px] hover:text-[#0084FF] hover:underline'> {friend.firstname} {friend.lastname}</div>
                 </li>
               )
             })}
@@ -171,14 +174,16 @@ export const UserPage = () => {
                         <div className='mr-0 ml-auto right-10 bottom-4'>
                           <button className='flex-row flex bg-[#1877f2] px-4 py-2 border-neutral-400 rounded-[3px]  text-white font-semibold shadow-inner'>Send Message</button>
                           <div className='spacer w-px h-4'></div>
+                          {isFriend ? (
                           <button onClick={() => handleSendFriendForm()} className='flex-row flex bg-[#1877f2] px-4 py-2 border-neutral-400 rounded-[3px]  text-white font-semibold shadow-lg hover:bg-[#186ddd]'>
-                            <svg fill='#ffff' xmlns='http://www.w3.org/2000/svg' id='Outline' data-name='Isolation Mode' viewBox='0 0 24 24' width='24' height='24' x='0' y='0'>
-                              <path d='M16.043,14H7.957A4.963,4.963,0,0,0,3,18.957V24H21V18.957A4.963,4.963,0,0,0,16.043,14Z'></path>
-                              <circle cx='12' cy='6' r='6'></circle>
-                            </svg>
-                            <div className='spacer h-px w-3'></div>
-                            <span className='m-auto'>Add User</span>
-                          </button>
+                          <svg fill='#ffff' xmlns='http://www.w3.org/2000/svg' id='Outline' data-name='Isolation Mode' viewBox='0 0 24 24' width='24' height='24' x='0' y='0'>
+                            <path d='M16.043,14H7.957A4.963,4.963,0,0,0,3,18.957V24H21V18.957A4.963,4.963,0,0,0,16.043,14Z'></path>
+                            <circle cx='12' cy='6' r='6'></circle>
+                          </svg>
+                          <div className='spacer h-px w-3'></div>
+                          <span className='m-auto'>Add User</span>
+                        </button>
+                          ):null}
                         </div>}
                       </div>
                     </div>
@@ -197,8 +202,8 @@ export const UserPage = () => {
                           <span className='text-neutral-800 text-[38px] font-semibold'>{finded?.firstname} {finded?.lastname}</span>
                           <span className='text-neutral-500 text-[17px] font-medium'>@{finded?.username}</span>
                         </div>
-                        <div className='mr-0 ml-auto right-10 bottom-4'>
-                          <button className='flex-row flex bg-[#1877f2] px-4 py-2 border-neutral-400 rounded-[3px]  text-white font-semibold shadow-inner'>Send Message</button>
+                        <div onClick={() => navigate('/messenger')} className='mr-0 ml-auto right-10 bottom-4'>
+                          <button  className='flex-row flex bg-[#1877f2] px-4 py-2 border-neutral-400 rounded-[3px]  text-white font-semibold shadow-inner'>Send Message</button>
                         </div>
                       </div>
                     </div>

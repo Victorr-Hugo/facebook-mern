@@ -34,7 +34,6 @@ app.use('/api', commentRouter)
 app.use('/api', chatRouter)
 app.use('/api', marketPlaceRouter)
 app.use('/api', groupRouter)
-app.use('/api', chatRouter)
 
 const io = new Server(httpServer, {
     cors: {
@@ -53,7 +52,6 @@ const removeUser = (socketId) => {
 }
 
 const getUser = (userId) => {
-    console.log(users)
     return users.find((user) => user.userId === userId)
 }
 
@@ -64,9 +62,11 @@ io.on('connection',(socket) => {
         io.emit('getUsers', users)
     })
 
-    socket.on('sendMessage', ({ from, to, body }) => {
-        const user = getUser(from)
+    socket.on('sendMessage', ({ _id, from, receiverId, body }) => {
+        const user = getUser(receiverId)
+        console.log(user)
         io.to(user.socketId).emit('getMessage', {
+            _id,
             from,
             body,
         })

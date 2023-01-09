@@ -1,6 +1,5 @@
 import { Router } from "express";
 import {
-    createChat,
     getUserChat,
     searchChat,
     createMessage,
@@ -8,9 +7,8 @@ import {
 }from '../controllers/chat.controllers.js'
 const router = Router()
 
-router.post('/chat/create/:senderId/:receiverId', createChat)
 router.get('/chat/:id', getUserChat)
-router.get('/chat/:firstUser/:secondUser/', searchChat)
+router.get('/chat/:firstUser/:secondUser', searchChat)
 
 router.post('/chat/message', createMessage)
 router.get('/chat/messages/:id', getMessages)
