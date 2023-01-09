@@ -16,7 +16,16 @@ a social media app with the MERN stack
 
 ## :camera: ScreenShots
 
-###### ![alt text](https://res.cloudinary.com/dkdcb5anq/image/upload/v1672472972/Captura_de_pantalla_de_2022-12-31_00-34-33_nyat7d.png)
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-04%2015-17-36.png)
 
-###### ![alt text](https://res.cloudinary.com/dkdcb5anq/image/upload/v1672472972/Captura_de_pantalla_de_2022-12-31_00-35-05_yliarr.png)
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-04%2015-18-23.png)
+
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-04%2015-18-35.png)
+
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-09%2001-49-09.png)
+
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-09%2002-10-55.png)
+
+###### ![alt text](https://github.com/Victorr-Hugo/facebook-mern/blob/main/showcase/Captura%20de%20pantalla%20de%202023-01-09%2002-11-25.png)
+
 
